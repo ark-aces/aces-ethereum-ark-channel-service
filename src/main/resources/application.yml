@@ -1,0 +1,26 @@
+serverInfo:
+  name: "Aces BTC-ARK Channel Service"
+  description: "ACES BTC to ARK Channel service for transferring BTC to ARK"
+  version: "1.0.0"
+  websiteUrl: "https://arkaces.com"
+  
+#spring:
+#  datasource:
+#    url: "jdbc:h2:/tmp/btc_ark_channel_service.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+#    driver-class-name: "org.h2.Driver"
+#  jpa:
+#    hibernate:
+#      ddl-auto: "create-drop"
+
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/btc_ark_channel_service_db
+    username: btc_ark_channel_service_db_user
+    password: btc_ark_channel_service_db_password
+
+# Ark network config YML that listening will be performed against
+arkNetworkConfigPath: "ark_network_config/testnet.yml"
+
+server:
+  port: 9190
