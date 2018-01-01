@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -28,6 +29,6 @@ public class ContractEntity {
     private String depositBtcPassphrase;
     
     @OneToMany
-    private List<TransferEntity> transferEntities;
+    private List<TransferEntity> transferEntities = new ArrayList<>();
     
 }
