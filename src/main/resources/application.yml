@@ -80,3 +80,7 @@ arkNetworkConfigPath: "ark_network_config/testnet.yml"
 
 server:
   port: 9190
+  
+bitcoinListener:
+  url: https://btc-listener-testnet.arkaces.com/
+  apiKey: ???

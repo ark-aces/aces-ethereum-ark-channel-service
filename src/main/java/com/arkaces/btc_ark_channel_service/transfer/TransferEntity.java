@@ -1,5 +1,6 @@
-package com.arkaces.btc_ark_channel_service.contract;
+package com.arkaces.btc_ark_channel_service.transfer;
 
+import com.arkaces.btc_ark_channel_service.contract.ContractEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,6 +18,8 @@ public class TransferEntity {
 
     private String id;
     private LocalDateTime createdAt;
+    private String status;
+    private String btcTransactionId;
     private BigDecimal btcAmount;
     private BigDecimal btcToArkRate;
     private BigDecimal btcFlatFee;
@@ -24,4 +27,7 @@ public class TransferEntity {
     private BigDecimal btcTotalFee;
     private BigDecimal arkSendAmount;
     private String arkTransactionId;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ContractEntity contractEntity;
 }

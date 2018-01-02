@@ -1,6 +1,7 @@
 package com.arkaces.btc_ark_channel_service.contract;
 
 import com.arkaces.aces_server.aces_service.contract.Contract;
+import com.arkaces.btc_ark_channel_service.transfer.TransferMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

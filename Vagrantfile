@@ -8,8 +8,8 @@ Vagrant.configure("2") do |config|
   # postgreql
   config.vm.network "forwarded_port", guest: 5432, host: 5432
   
-  # bitcoind rcp
-  config.vm.network "forwarded_port", guest: 18080, host: 18080
+  # bitcoind rcp (18332 for testnet, 8332 for mainnet)
+  config.vm.network "forwarded_port", guest: 18332, host: 18332
   
   # ark node api
   config.vm.network "forwarded_port", guest: 4001, host: 4001

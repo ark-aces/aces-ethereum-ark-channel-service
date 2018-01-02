@@ -1,11 +1,15 @@
 package com.arkaces.btc_ark_channel_service.contract;
 
+import com.arkaces.ApiException;
+import com.arkaces.aces_listener_api.AcesListenerApi;
 import com.arkaces.aces_server.aces_service.contract.Contract;
 import com.arkaces.aces_server.aces_service.contract.ContractStatus;
 import com.arkaces.aces_server.aces_service.contract.CreateContractRequest;
 import com.arkaces.aces_server.aces_service.error.ServiceErrorCodes;
 import com.arkaces.aces_server.common.error.NotFoundException;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
+import io.swagger.client.model.Subscription;
+import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ public class ContractController {
     private final IdentifierGenerator identifierGenerator;
     private final ContractRepository contractRepository;
     private final ContractMapper contractMapper;
+    private final AcesListenerApi bitcoinListener;
     
     @PostMapping("/contracts")
     public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) {
@@ -29,10 +34,27 @@ public class ContractController {
         contractEntity.setCreatedAt(LocalDateTime.now());
         contractEntity.setId(identifierGenerator.generate());
         contractEntity.setStatus(ContractStatus.EXECUTED);
+        
+        // todo: generate bitcoin wallet for deposits
+        String depositBitcoinAddress = "???";
+        
+        // todo: subscribe to bitcoin listener on deposit bitcoin address
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+        subscriptionRequest.setCallbackUrl(depositBitcoinAddress);
+        subscriptionRequest.setMinConfirmations(2);
+        // todo: add recipient address filter to bitcoin
+        // subscriptionRequest.setRecipientAddress(depositBitcoinAddress);
+
+        Subscription subscription;
+        try {
+            subscription = bitcoinListener.subscriptionsPost(subscriptionRequest);
+        } catch (ApiException e) {
+            throw new RuntimeException("Bitcoin Listener subscription failed to POST", e);
+        }
+        contractEntity.setSubscriptionId(subscription.getId());
+
         contractRepository.save(contractEntity);
-        
-        // todo: do the stuff!
-        
+
         return contractMapper.map(contractEntity);
     }
     

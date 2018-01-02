@@ -1,6 +1,8 @@
 package com.arkaces.btc_ark_channel_service;
 
 import ark_java_client.*;
+import com.arkaces.ApiClient;
+import com.arkaces.aces_listener_api.AcesListenerApi;
 import com.arkaces.aces_server.aces_service.config.AcesServiceConfig;
 import com.arkaces.aces_server.ark_auth.ArkAuthConfig;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -28,4 +30,14 @@ public class ApplicationConfig {
         return httpArkClientFactory.create(arkNetwork);
     }
 
+    @Bean
+    public AcesListenerApi bitcoinListener(Environment environment) {
+        ApiClient apiClient = new ApiClient();
+        apiClient.setBasePath(environment.getProperty("bitcoinListener.url"));
+        apiClient.setUsername("token");
+        apiClient.setPassword(environment.getProperty("bitcoinListener.apikey"));
+        
+        return new AcesListenerApi(apiClient);
+    }
+    
 }

@@ -1,5 +1,6 @@
 package com.arkaces.btc_ark_channel_service.contract;
 
+import com.arkaces.btc_ark_channel_service.transfer.Transfer;
 import lombok.Data;
 
 import java.util.List;
