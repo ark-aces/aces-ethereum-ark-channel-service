@@ -71,18 +71,18 @@ serverInfo:
 #      ddl-auto: "create-drop"
 
 
-spring:
-  datasource:
-    platform: postgres
-    url: jdbc:postgresql://localhost:5432/aces_btc_ark_channel_db
-    username: service_user
-    password: password
-  jpa:
-    hibernate:
-      ddl-auto: validate
-
-flyway:
-  enabled: true
+#spring:
+#  datasource:
+#    platform: postgres
+#    url: jdbc:postgresql://localhost:5432/aces_btc_ark_channel_db
+#    username: service_user
+#    password: password
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate
+#
+#flyway:
+#  enabled: true
 
 arkNetworkConfigPath: "ark_network_config/testnet.yml"
 
