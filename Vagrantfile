@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
   end
   
-  # postgreql
+  # postgresql
   config.vm.network "forwarded_port", guest: 5432, host: 5432
   
   # bitcoind rcp (18332 for testnet, 8332 for mainnet)

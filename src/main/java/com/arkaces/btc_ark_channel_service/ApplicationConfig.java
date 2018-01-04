@@ -34,10 +34,13 @@ public class ApplicationConfig {
     public AcesListenerApi bitcoinListener(Environment environment) {
         ApiClient apiClient = new ApiClient();
         apiClient.setBasePath(environment.getProperty("bitcoinListener.url"));
-        apiClient.setUsername("token");
-        apiClient.setPassword(environment.getProperty("bitcoinListener.apikey"));
-        
+        if (environment.containsProperty("bitcoinListener.apikey")) {
+            apiClient.setUsername("token");
+            apiClient.setPassword(environment.getProperty("bitcoinListener.apikey"));
+        }
+
         return new AcesListenerApi(apiClient);
     }
-    
+
+
 }

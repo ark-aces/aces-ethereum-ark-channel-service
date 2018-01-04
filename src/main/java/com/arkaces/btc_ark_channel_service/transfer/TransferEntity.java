@@ -20,12 +20,25 @@ public class TransferEntity {
     private LocalDateTime createdAt;
     private String status;
     private String btcTransactionId;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal btcAmount;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal btcToArkRate;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal btcFlatFee;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal btcPercentFee;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal btcTotalFee;
+
+    @Column(precision = 20, scale = 8)
     private BigDecimal arkSendAmount;
+
     private String arkTransactionId;
 
     @ManyToOne(cascade = CascadeType.ALL)

@@ -6,6 +6,8 @@ serverInfo:
     sent directly to the given recipientArkAddress less service fees.
   version: "1.0.0"
   websiteUrl: "https://arkaces.com"
+  flatFee: "0"
+  percentFee: "1.00%"
   inputSchema: >
     {
       "type": "object",
@@ -67,20 +69,34 @@ serverInfo:
 #  jpa:
 #    hibernate:
 #      ddl-auto: "create-drop"
-#
-#spring:
-#  datasource:
-#    platform: postgres
-#    url: jdbc:postgresql://localhost:5432/btc_ark_channel_service_db
-#    username: btc_ark_channel_service_db_user
-#    password: btc_ark_channel_service_db_password
 
-# Ark network config YML that listening will be performed against
+
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/aces_btc_ark_channel_db
+    username: service_user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+flyway:
+  enabled: true
+
 arkNetworkConfigPath: "ark_network_config/testnet.yml"
+
+serviceArkAccount:
+  address: AewU1vEmPrtQNjdVo33cX84bfovY3jNAkV
+  passphrase: change-me
+
+fees:
+  btcFlatFee: 0
+  btcPercentFee: 1
 
 server:
   port: 9190
   
 bitcoinListener:
-  url: https://btc-listener-testnet.arkaces.com/
-  apiKey: ???
+  url: https://btc-listener-mainnet.arkaces.com/
+  apiKey: change-me
