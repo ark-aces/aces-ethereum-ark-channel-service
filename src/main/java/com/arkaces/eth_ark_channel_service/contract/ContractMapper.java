@@ -23,7 +23,7 @@ public class ContractMapper {
         contract.setStatus(contractEntity.getStatus());
         
         Results results = new Results();
-        results.setDepositBtcAddress(contractEntity.getDepositBtcAddress());
+        results.setDepositEthAddress(contractEntity.getDepositEthAddress());
         results.setRecipientArkAddress(contractEntity.getRecipientArkAddress());
         results.setTransfers(
             contractEntity.getTransferEntities().stream()

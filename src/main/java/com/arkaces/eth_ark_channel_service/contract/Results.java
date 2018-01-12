@@ -7,7 +7,8 @@ import java.util.List;
 
 @Data
 public class Results {
+
     private String recipientArkAddress;
-    private String depositBtcAddress;
+    private String depositEthAddress;
     private List<Transfer> transfers;
 }

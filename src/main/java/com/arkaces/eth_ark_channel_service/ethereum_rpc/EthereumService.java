@@ -1,4 +1,4 @@
-package com.arkaces.eth_ark_channel_service.bitcoin_rpc;
+package com.arkaces.eth_ark_channel_service.ethereum_rpc;
 
 import com.arkaces.aces_server.common.json.NiceObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,68 +15,66 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
-public class BitcoinService {
+public class EthereumService {
 
-    private final RestTemplate bitcoinRpcRestTemplate;
+    private final RestTemplate ethereumRpcRestTemplate;
 
-    private final BitcoinRpcRequestFactory bitcoinRpcRequestFactory = new BitcoinRpcRequestFactory();
+    private final EthereumRpcRequestFactory ethereumRpcRequestFactory = new EthereumRpcRequestFactory();
 
     private final NiceObjectMapper objectMapper = new NiceObjectMapper(new ObjectMapper());
 
     public String getNewAddress() {
         HttpEntity<String> blockHashRequestEntity = getRequestEntity("getnewaddress", new ArrayList<>());
-        return bitcoinRpcRestTemplate
+        return ethereumRpcRestTemplate
             .exchange(
                 "/",
                 HttpMethod.POST,
                 blockHashRequestEntity,
-                new ParameterizedTypeReference<BitcoinRpcResponse<String>>() {}
+                new ParameterizedTypeReference<EthereumRpcResponse<String>>() {}
             )
             .getBody()
             .getResult();
     }
 
     public String getPrivateKey(String address) {
-        HttpEntity<String> blockHashRequestEntity = getRequestEntity("dumpprivkey", Arrays.asList(address));
-        return bitcoinRpcRestTemplate
+        HttpEntity<String> blockHashRequestEntity = getRequestEntity("dumpprivkey", Collections.singletonList(address));
+        return ethereumRpcRestTemplate
             .exchange(
                 "/",
                 HttpMethod.POST,
                 blockHashRequestEntity,
-                new ParameterizedTypeReference<BitcoinRpcResponse<String>>() {}
+                new ParameterizedTypeReference<EthereumRpcResponse<String>>() {}
             )
             .getBody()
             .getResult();
     }
 
     public JsonNode getTransaction(String transactionId) {
-        HttpEntity<String> blockHashRequestEntity = getRequestEntity("gettransaction", Arrays.asList(transactionId));
-        return bitcoinRpcRestTemplate
+        HttpEntity<String> blockHashRequestEntity = getRequestEntity("gettransaction", Collections.singletonList(transactionId));
+        return ethereumRpcRestTemplate
             .exchange(
                 "/",
                 HttpMethod.POST,
                 blockHashRequestEntity,
-                new ParameterizedTypeReference<BitcoinRpcResponse<JsonNode>>() {}
+                new ParameterizedTypeReference<EthereumRpcResponse<JsonNode>>() {}
             )
             .getBody()
             .getResult();
     }
 
-
     private HttpEntity<String> getRequestEntity(String method, List<Object> params) {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Content-Type", "text/plain");
 
-        BitcoinRpcRequest bitcoinRpcRequest = bitcoinRpcRequestFactory.create(method, params);
-        String body = objectMapper.writeValueAsString(bitcoinRpcRequest);
+        EthereumRpcRequest ethereumRpcRequest = ethereumRpcRequestFactory.create(method, params);
+        String body = objectMapper.writeValueAsString(ethereumRpcRequest);
 
         return new HttpEntity<>(body, headers);
     }
-
 }

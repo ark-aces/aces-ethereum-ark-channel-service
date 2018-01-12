@@ -8,7 +8,7 @@ import com.arkaces.aces_server.aces_service.contract.CreateContractRequest;
 import com.arkaces.aces_server.aces_service.error.ServiceErrorCodes;
 import com.arkaces.aces_server.common.error.NotFoundException;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
-import com.arkaces.eth_ark_channel_service.bitcoin_rpc.BitcoinService;
+import com.arkaces.eth_ark_channel_service.ethereum_rpc.EthereumService;
 import io.swagger.client.model.Subscription;
 import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,8 @@ public class ContractController {
     private final IdentifierGenerator identifierGenerator;
     private final ContractRepository contractRepository;
     private final ContractMapper contractMapper;
-    private final AcesListenerApi bitcoinListener;
-    private final BitcoinService bitcoinService;
+    private final AcesListenerApi ethereumListener;
+    private final EthereumService ethereumService;
     
     @PostMapping("/contracts")
     public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) {
@@ -37,23 +37,23 @@ public class ContractController {
         contractEntity.setId(identifierGenerator.generate());
         contractEntity.setStatus(ContractStatus.EXECUTED);
         
-        // generate bitcoin wallet for deposits
-        String depositBitcoinAddress = bitcoinService.getNewAddress();
-        contractEntity.setDepositBtcAddress(depositBitcoinAddress);
+        // Generate ethereum wallet for deposits
+        String depositEthereumAddress = ethereumService.getNewAddress();
+        contractEntity.setDepositEthAddress(depositEthereumAddress);
 
-        String addressPrivateKey = bitcoinService.getPrivateKey(depositBitcoinAddress);
-        contractEntity.setDepositBtcPassphrase(addressPrivateKey);
+        String addressPrivateKey = ethereumService.getPrivateKey(depositEthereumAddress);
+        contractEntity.setDepositEthPassphrase(addressPrivateKey);
         
-        // subscribe to bitcoin listener on deposit bitcoin address
+        // Subscribe to ethereum listener on deposit ethereum address
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-        subscriptionRequest.setCallbackUrl(depositBitcoinAddress);
+        subscriptionRequest.setCallbackUrl(depositEthereumAddress);
         subscriptionRequest.setMinConfirmations(2);
-        subscriptionRequest.setRecipientAddress(depositBitcoinAddress);
+        subscriptionRequest.setRecipientAddress(depositEthereumAddress);
         Subscription subscription;
         try {
-            subscription = bitcoinListener.subscriptionsPost(subscriptionRequest);
+            subscription = ethereumListener.subscriptionsPost(subscriptionRequest);
         } catch (ApiException e) {
-            throw new RuntimeException("Bitcoin Listener subscription failed to POST", e);
+            throw new RuntimeException("Ethereum Listener subscription failed to POST", e);
         }
         contractEntity.setSubscriptionId(subscription.getId());
 
@@ -68,7 +68,6 @@ public class ContractController {
         if (contractEntity == null) {
             throw new NotFoundException(ServiceErrorCodes.CONTRACT_NOT_FOUND, "Contract not found with id = " + contractId);
         }
-        
         return contractMapper.map(contractEntity);
     }
 }

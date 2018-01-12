@@ -19,22 +19,22 @@ public class TransferEntity {
     private String id;
     private LocalDateTime createdAt;
     private String status;
-    private String btcTransactionId;
+    private String ethTransactionId;
 
     @Column(precision = 20, scale = 8)
-    private BigDecimal btcAmount;
+    private BigDecimal ethAmount;
 
     @Column(precision = 20, scale = 8)
-    private BigDecimal btcToArkRate;
+    private BigDecimal ethToArkRate;
 
     @Column(precision = 20, scale = 8)
-    private BigDecimal btcFlatFee;
+    private BigDecimal ethFlatFee;
 
     @Column(precision = 20, scale = 8)
-    private BigDecimal btcPercentFee;
+    private BigDecimal ethPercentFee;
 
     @Column(precision = 20, scale = 8)
-    private BigDecimal btcTotalFee;
+    private BigDecimal ethTotalFee;
 
     @Column(precision = 20, scale = 8)
     private BigDecimal arkSendAmount;

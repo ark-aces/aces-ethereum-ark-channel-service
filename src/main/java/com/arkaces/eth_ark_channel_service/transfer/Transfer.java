@@ -4,15 +4,16 @@ import lombok.Data;
 
 @Data
 public class Transfer {
+
     private String id;
     private String status;
     private String createdAt;
-    private String btcTransactionId;
-    private String btcAmount;
-    private String btcToArkRate;
-    private String btcFlatFee;
-    private String btcPercentFee;
-    private String btcTotalFee;
+    private String ethTransactionId;
+    private String ethAmount;
+    private String ethToArkRate;
+    private String ethFlatFee;
+    private String ethPercentFee;
+    private String ethTotalFee;
     private String arkSendAmount;
     private String arkTransactionId;
 }
