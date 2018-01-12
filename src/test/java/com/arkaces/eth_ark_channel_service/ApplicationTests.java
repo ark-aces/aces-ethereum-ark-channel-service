@@ -1,4 +1,4 @@
-package com.arkaces.ark_btc_channel_service;
+package com.arkaces.eth_ark_channel_service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
