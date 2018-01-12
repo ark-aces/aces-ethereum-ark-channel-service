@@ -10,6 +10,6 @@ import java.math.BigDecimal;
 @Component
 @ConfigurationProperties(prefix = "fees")
 public class FeeSettings {
-    private BigDecimal btcFlatFee;
-    private BigDecimal btcPercentFee;
+    private BigDecimal ethFlatFee;
+    private BigDecimal ethPercentFee;
 }

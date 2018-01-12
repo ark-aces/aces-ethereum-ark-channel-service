@@ -25,22 +25,18 @@ public class ApplicationConfig {
         ArkNetworkFactory arkNetworkFactory = new ArkNetworkFactory();
         String arkNetworkConfigPath = environment.getProperty("arkNetworkConfigPath");
         ArkNetwork arkNetwork = arkNetworkFactory.createFromYml(arkNetworkConfigPath);
-
         HttpArkClientFactory httpArkClientFactory = new HttpArkClientFactory();
         return httpArkClientFactory.create(arkNetwork);
     }
 
     @Bean
-    public AcesListenerApi bitcoinListener(Environment environment) {
+    public AcesListenerApi ethereumListener(Environment environment) {
         ApiClient apiClient = new ApiClient();
-        apiClient.setBasePath(environment.getProperty("bitcoinListener.url"));
-        if (environment.containsProperty("bitcoinListener.apikey")) {
+        apiClient.setBasePath(environment.getProperty("ethereumListener.url"));
+        if (environment.containsProperty("ethereumListener.apikey")) {
             apiClient.setUsername("token");
-            apiClient.setPassword(environment.getProperty("bitcoinListener.apikey"));
+            apiClient.setPassword(environment.getProperty("ethereumListener.apikey"));
         }
-
         return new AcesListenerApi(apiClient);
     }
-
-
 }
