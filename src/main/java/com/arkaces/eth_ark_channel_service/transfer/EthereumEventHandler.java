@@ -5,7 +5,6 @@ import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
 import com.arkaces.eth_ark_channel_service.FeeSettings;
 import com.arkaces.eth_ark_channel_service.ServiceArkAccountSettings;
 import com.arkaces.eth_ark_channel_service.ark.ArkSatoshiService;
-import com.arkaces.eth_ark_channel_service.ethereum_rpc.EthereumService;
 import com.arkaces.eth_ark_channel_service.contract.ContractEntity;
 import com.arkaces.eth_ark_channel_service.contract.ContractRepository;
 import com.arkaces.eth_ark_channel_service.exchange_rate.ExchangeRateService;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @RestController
@@ -29,7 +27,6 @@ public class EthereumEventHandler {
 
     private final ContractRepository contractRepository;
     private final TransferRepository transferRepository;
-    private final EthereumService ethereumService;
     private final IdentifierGenerator identifierGenerator;
     private final ExchangeRateService exchangeRateService;
     private final ArkClient arkClient;
@@ -62,10 +59,10 @@ public class EthereumEventHandler {
             transferEntity.setContractEntity(contractEntity);
 
             // Get ETH amount from transaction
-            JsonNode transaction = ethereumService.getTransaction(ethTransactionId);
-            BigDecimal ethAmount = transaction.get("amount").decimalValue();
-            BigDecimal ethFee = transaction.get("fee").decimalValue(); // todo: is this fee included in amount?
-            transferEntity.setEthAmount(ethAmount);
+            // JsonNode transaction = ethereumService.getTransaction(ethTransactionId);
+            // BigDecimal ethAmount = transaction.get("amount").decimalValue();
+            // BigDecimal ethFee = transaction.get("fee").decimalValue(); // todo: is this fee included in amount?
+            // transferEntity.setEthAmount(ethAmount);
 
             BigDecimal ethToArkRate = exchangeRateService.getRate("ETH", "ARK"); //2027.58, Ark 8, Eth 15000
             transferEntity.setEthToArkRate(ethToArkRate);
@@ -74,17 +71,17 @@ public class EthereumEventHandler {
             transferEntity.setEthFlatFee(feeSettings.getEthFlatFee());
             transferEntity.setEthPercentFee(feeSettings.getEthPercentFee());
 
-            BigDecimal percentFee = feeSettings.getEthPercentFee()
-                    .divide(new BigDecimal("100.00"), 8, BigDecimal.ROUND_HALF_UP);
-            BigDecimal ethTotalFeeAmount = ethAmount.multiply(percentFee).add(feeSettings.getEthFlatFee());
-            transferEntity.setEthTotalFee(ethTotalFeeAmount);
+            // BigDecimal percentFee = feeSettings.getEthPercentFee()
+            //         .divide(new BigDecimal("100.00"), 8, BigDecimal.ROUND_HALF_UP);
+            // BigDecimal ethTotalFeeAmount = ethAmount.multiply(percentFee).add(feeSettings.getEthFlatFee());
+            // transferEntity.setEthTotalFee(ethTotalFeeAmount);
 
             // Calculate send ark amount
             BigDecimal arkSendAmount = BigDecimal.ZERO;
-            if (ethAmount.compareTo(ethTotalFeeAmount) > 0) {
-                arkSendAmount = ethAmount.multiply(ethToArkRate).setScale(8, RoundingMode.HALF_DOWN);
-            }
-            transferEntity.setArkSendAmount(arkSendAmount);
+            // if (ethAmount.compareTo(ethTotalFeeAmount) > 0) {
+            //     arkSendAmount = ethAmount.multiply(ethToArkRate).setScale(8, RoundingMode.HALF_DOWN);
+            // }
+            // transferEntity.setArkSendAmount(arkSendAmount);
 
             transferEntity.setStatus(TransferStatus.NEW);
             transferRepository.save(transferEntity);

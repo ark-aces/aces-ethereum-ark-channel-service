@@ -8,10 +8,11 @@ import com.arkaces.aces_server.aces_service.contract.CreateContractRequest;
 import com.arkaces.aces_server.aces_service.error.ServiceErrorCodes;
 import com.arkaces.aces_server.common.error.NotFoundException;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
-import com.arkaces.eth_ark_channel_service.ethereum_rpc.EthereumService;
 import io.swagger.client.model.Subscription;
 import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;
+import org.ethereum.crypto.ECKey;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,6 @@ public class ContractController {
     private final ContractRepository contractRepository;
     private final ContractMapper contractMapper;
     private final AcesListenerApi ethereumListener;
-    private final EthereumService ethereumService;
     
     @PostMapping("/contracts")
     public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) {
@@ -38,10 +38,10 @@ public class ContractController {
         contractEntity.setStatus(ContractStatus.EXECUTED);
         
         // Generate ethereum wallet for deposits
-        String depositEthereumAddress = ethereumService.getNewAddress();
+        ECKey key = new ECKey();
+        String depositEthereumAddress = Hex.toHexString(key.getAddress());
         contractEntity.setDepositEthAddress(depositEthereumAddress);
-
-        String addressPrivateKey = ethereumService.getPrivateKey(depositEthereumAddress);
+        String addressPrivateKey = Hex.toHexString(key.getPrivKeyBytes());
         contractEntity.setDepositEthPassphrase(addressPrivateKey);
         
         // Subscribe to ethereum listener on deposit ethereum address
