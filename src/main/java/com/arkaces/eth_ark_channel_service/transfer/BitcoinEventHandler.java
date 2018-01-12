@@ -1,14 +1,14 @@
-package com.arkaces.btc_ark_channel_service.transfer;
+package com.arkaces.eth_ark_channel_service.transfer;
 
 import ark_java_client.ArkClient;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
-import com.arkaces.btc_ark_channel_service.FeeSettings;
-import com.arkaces.btc_ark_channel_service.ServiceArkAccountSettings;
-import com.arkaces.btc_ark_channel_service.ark.ArkSatoshiService;
-import com.arkaces.btc_ark_channel_service.bitcoin_rpc.BitcoinService;
-import com.arkaces.btc_ark_channel_service.contract.ContractEntity;
-import com.arkaces.btc_ark_channel_service.contract.ContractRepository;
-import com.arkaces.btc_ark_channel_service.exchange_rate.ExchangeRateService;
+import com.arkaces.eth_ark_channel_service.FeeSettings;
+import com.arkaces.eth_ark_channel_service.ServiceArkAccountSettings;
+import com.arkaces.eth_ark_channel_service.ark.ArkSatoshiService;
+import com.arkaces.eth_ark_channel_service.bitcoin_rpc.BitcoinService;
+import com.arkaces.eth_ark_channel_service.contract.ContractEntity;
+import com.arkaces.eth_ark_channel_service.contract.ContractRepository;
+import com.arkaces.eth_ark_channel_service.exchange_rate.ExchangeRateService;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

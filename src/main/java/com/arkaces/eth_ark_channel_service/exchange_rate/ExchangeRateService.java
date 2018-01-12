@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service.exchange_rate;
+package com.arkaces.eth_ark_channel_service.exchange_rate;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;

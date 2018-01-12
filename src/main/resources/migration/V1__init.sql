@@ -10,12 +10,12 @@ CREATE TABLE transfers (
   created_at TIMESTAMP,
   contract_pid BIGINT NOT NULL,
   status VARCHAR(255),
-  btc_transaction_id VARCHAR(255),
-  btc_amount DECIMAL(8,5),
-  btc_to_ark_rate DECIMAL(8,5),
-  btc_flat_fee DECIMAL(8,5),
-  btc_percent_fee DECIMAL(8,5),
-  btc_total_fee DECIMAL(8,5),
+  eth_transaction_id VARCHAR(255),
+  eth_amount DECIMAL(8,5),
+  eth_to_ark_rate DECIMAL(8,5),
+  eth_flat_fee DECIMAL(8,5),
+  eth_percent_fee DECIMAL(8,5),
+  eth_total_fee DECIMAL(8,5),
   ark_send_amount DECIMAL(8,5),
   ark_transaction_id VARCHAR(255)
 );

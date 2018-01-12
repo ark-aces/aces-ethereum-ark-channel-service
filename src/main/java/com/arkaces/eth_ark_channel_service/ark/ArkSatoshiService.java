@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service.ark;
+package com.arkaces.eth_ark_channel_service.ark;
 
 import org.springframework.stereotype.Service;
 

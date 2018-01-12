@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service;
+package com.arkaces.eth_ark_channel_service;
 
 import ark_java_client.*;
 import com.arkaces.ApiClient;

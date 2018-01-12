@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service.contract;
+package com.arkaces.eth_ark_channel_service.contract;
 
 import com.arkaces.ApiException;
 import com.arkaces.aces_listener_api.AcesListenerApi;
@@ -8,7 +8,7 @@ import com.arkaces.aces_server.aces_service.contract.CreateContractRequest;
 import com.arkaces.aces_server.aces_service.error.ServiceErrorCodes;
 import com.arkaces.aces_server.common.error.NotFoundException;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
-import com.arkaces.btc_ark_channel_service.bitcoin_rpc.BitcoinService;
+import com.arkaces.eth_ark_channel_service.bitcoin_rpc.BitcoinService;
 import io.swagger.client.model.Subscription;
 import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;

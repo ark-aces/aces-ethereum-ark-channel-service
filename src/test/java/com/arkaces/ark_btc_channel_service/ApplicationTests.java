@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service;
+package com.arkaces.ark_btc_channel_service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,5 +12,4 @@ public class ApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
-
 }

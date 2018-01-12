@@ -1,6 +1,6 @@
-# aces-service-btc-ark-channel
-ACES BTC to ARK transfer channel service
+# aces-service-eth-ark-channel
 
+ACES ETH to ARK transfer channel service
 
 ## Using Service
 
@@ -9,13 +9,14 @@ Get service info:
 ```
 curl http://localhost:9190/
 ```
+
 ```
 {
-  "name" : "Aces BTC-ARK Channel Service",
-  "description" : "ACES BTC to ARK Channel service for transferring BTC to ARK",
+  "name" : "Aces ETH-ARK Channel Service",
+  "description" : "ACES ETH to ARK Channel service for transferring ETH to ARK",
   "version" : "1.0.0",
   "websiteUrl" : "https://arkaces.com",
-  "instructions" : "After this contract is executed, any BTC sent to depositBtcAddress will be exchanged for ARK and  sent directly to the given recipientArkAddress less service fees.\n",
+  "instructions" : "After this contract is executed, any ETH sent to depositEthAddress will be exchanged for ARK and sent directly to the given recipientArkAddress less service fees.\n",
   "flatFee" : "0",
   "percentFee" : "1.00%",
   "inputSchema" : {
@@ -30,7 +31,7 @@ curl http://localhost:9190/
   "outputSchema" : {
     "type" : "object",
     "properties" : {
-      "depositBtcAddress" : {
+      "depositEthAddress" : {
         "type" : "string"
       },
       "recipientArkAddress" : {
@@ -39,19 +40,19 @@ curl http://localhost:9190/
       "transfers" : {
         "type" : "array",
         "properties" : {
-          "btcAmount" : {
+          "ethAmount" : {
             "type" : "string"
           },
-          "btcToArkRate" : {
+          "ethToArkRate" : {
             "type" : "string"
           },
-          "btcFlatFee" : {
+          "ethFlatFee" : {
             "type" : "string"
           },
-          "btcPercentFee" : {
+          "ethPercentFee" : {
             "type" : "string"
           },
-          "btcTotalFee" : {
+          "ethTotalFee" : {
             "type" : "string"
           },
           "arkSendAmount" : {
@@ -87,14 +88,13 @@ curl -X POST localhost:9190/contracts \
   "correlationId": "4aafe9-4a40-a7fb-6e788d2497f7",
   "status": "executed",
   "results": {
-  
     "recipientArkAddress": "ARNJJruY6RcuYCXcwWsu4bx9kyZtntqeAx",
-    "depositBtcAddress": "5b83337a5af30bba26a55830a7d0ccf69114137ff699a3d718699ba1f498d77b",
+    "depositEthAddress": "5b83337a5af30bba26a55830a7d0ccf69114137ff699a3d718699ba1f498d77b",
     "transfers": []
 }
 ```
 
-Get Contract information after sending BTC funds to `depositBtcAddress`:
+Get Contract information after sending ETH funds to `depositEthAddress`:
 
 ```
 curl -X GET http://localhost:9190/contracts/{id}
@@ -108,16 +108,16 @@ curl -X GET http://localhost:9190/contracts/{id}
   "status": "executed",
   "results": {
     "recipientArkAddress": "ARNJJruY6RcuYCXcwWsu4bx9kyZtntqeAx",
-    "depositBtcAddress": "5b83337a5af30bba26a55830a7d0ccf69114137ff699a3d718699ba1f498d77b",
+    "depositEthAddress": "5b83337a5af30bba26a55830a7d0ccf69114137ff699a3d718699ba1f498d77b",
     "transfers": [
       "id": "fa046b0e-7b05-4a2d-a4c9-168951df3b90",
       "createdAt": "2017-07-05T21:00:38.457Z",
-      "btcTransactionId": "",
-      "btcAmount": "1.00000",
-      "btcToArkRate": "2027.58000",
-      "btcFlatFee": "0.00000",
-      "btcPercentFee": "1.00000",
-      "btcTotalFee": "0.01000",
+      "ethTransactionId": "",
+      "ethAmount": "1.00000",
+      "ethToArkRate": "2027.58000",
+      "ethFlatFee": "0.00000",
+      "ethPercentFee": "1.00000",
+      "ethTotalFee": "0.01000",
       "arkSendAmount": "2007.30420",
       "arkTransactionId": "49f55381c5c3c70f96e848df53ab7f9ae9881dbb8eb43e8f91f642018bf1258f"
     ]

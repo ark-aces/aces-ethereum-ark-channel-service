@@ -1,6 +1,6 @@
-package com.arkaces.btc_ark_channel_service.contract;
+package com.arkaces.eth_ark_channel_service.contract;
 
-import com.arkaces.btc_ark_channel_service.transfer.TransferEntity;
+import com.arkaces.eth_ark_channel_service.transfer.TransferEntity;
 import lombok.Data;
 
 import javax.persistence.*;

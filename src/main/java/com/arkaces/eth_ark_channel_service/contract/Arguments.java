@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service.contract;
+package com.arkaces.eth_ark_channel_service.contract;
 
 import lombok.Data;
 

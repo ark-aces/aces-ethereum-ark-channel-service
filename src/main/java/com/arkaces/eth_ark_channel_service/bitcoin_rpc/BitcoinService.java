@@ -1,4 +1,4 @@
-package com.arkaces.btc_ark_channel_service.bitcoin_rpc;
+package com.arkaces.eth_ark_channel_service.bitcoin_rpc;
 
 import com.arkaces.aces_server.common.json.NiceObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
