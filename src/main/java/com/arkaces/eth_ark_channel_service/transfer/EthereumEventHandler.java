@@ -42,7 +42,7 @@ public class EthereumEventHandler {
 
         log.info("Received Ethereum event: " + ethTransactionId + " -> " + transaction.toString());
         
-        String subscriptionId = event.getTransactionId();
+        String subscriptionId = event.getSubscriptionId();
         ContractEntity contractEntity = contractRepository.findOneBySubscriptionId(subscriptionId);
         if (contractEntity != null) {
             // todo: lock contract for update to prevent concurrent processing of a listener transaction.
