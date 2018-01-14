@@ -11,7 +11,7 @@ import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
 import io.swagger.client.model.Subscription;
 import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;
-import org.ethereum.crypto.ECKey;
+import org.bitcoinj.core.ECKey;
 import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,16 +39,16 @@ public class ContractController {
         
         // Generate ethereum wallet for deposits
         ECKey key = new ECKey();
-        String depositEthereumAddress = Hex.toHexString(key.getAddress());
-        contractEntity.setDepositEthAddress(depositEthereumAddress);
-        String addressPrivateKey = Hex.toHexString(key.getPrivKeyBytes());
-        contractEntity.setDepositEthPassphrase(addressPrivateKey);
+        String depositEthAddress = Hex.toHexString(key.getPubKeyHash());
+        contractEntity.setDepositEthAddress(depositEthAddress);
+        String depositEthPassphrase = Hex.toHexString(key.getPrivKeyBytes());
+        contractEntity.setDepositEthPassphrase(depositEthPassphrase);
         
         // Subscribe to ethereum listener on deposit ethereum address
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-        subscriptionRequest.setCallbackUrl(depositEthereumAddress);
+        subscriptionRequest.setCallbackUrl(depositEthAddress);
         subscriptionRequest.setMinConfirmations(2);
-        subscriptionRequest.setRecipientAddress(depositEthereumAddress);
+        subscriptionRequest.setRecipientAddress(depositEthAddress);
         Subscription subscription;
         try {
             subscription = ethereumListener.subscriptionsPost(subscriptionRequest);
