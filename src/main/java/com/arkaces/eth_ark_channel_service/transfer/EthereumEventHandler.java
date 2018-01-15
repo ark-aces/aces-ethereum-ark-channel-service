@@ -63,7 +63,7 @@ public class EthereumEventHandler {
             BigDecimal ethAmount = new BigDecimal(transaction.getValue());
             transferEntity.setEthAmount(ethAmount);
 
-            BigDecimal ethToArkRate = exchangeRateService.getRate("ETH", "ARK"); // 2027.58, Ark 8, Eth 15000
+            BigDecimal ethToArkRate = exchangeRateService.getRate("ETH", "ARK");
             transferEntity.setEthToArkRate(ethToArkRate);
 
             // Set fees
@@ -87,10 +87,10 @@ public class EthereumEventHandler {
             // Send ark transaction
             Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
             String arkTransactionId = arkClient.broadcastTransaction(
-                contractEntity.getRecipientArkAddress(),
-                arkSendSatoshis,
-                null,
-                serviceArkAccountSettings.getPassphrase()
+                    contractEntity.getRecipientArkAddress(),
+                    arkSendSatoshis,
+                    null,
+                    serviceArkAccountSettings.getPassphrase()
             );
             transferEntity.setArkTransactionId(arkTransactionId);
 
