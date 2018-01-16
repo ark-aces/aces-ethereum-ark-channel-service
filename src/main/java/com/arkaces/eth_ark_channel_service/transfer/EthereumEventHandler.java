@@ -35,14 +35,14 @@ public class EthereumEventHandler {
     private final FeeSettings feeSettings;
 
     @PostMapping("/ethereumEvents")
-    public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEvent event) {
+    public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEventPayload eventPayload) {
         // TODO: Verify event post is signed by listener.
-        String ethTransactionId = event.getTransactionId();
-        EthereumTransaction transaction = event.getTransaction();
+        String ethTransactionId = eventPayload.getTransactionId();
+        EthereumTransaction transaction = eventPayload.getTransaction();
 
         log.info("Received ethereum event: {} -> {}", ethTransactionId, transaction.toString());
 
-        String subscriptionId = event.getSubscriptionId();
+        String subscriptionId = eventPayload.getSubscriptionId();
         ContractEntity contractEntity = contractRepository.findOneBySubscriptionId(subscriptionId);
         if (contractEntity != null) {
             // TODO: Lock contract for update to prevent concurrent processing of a listener transaction.
