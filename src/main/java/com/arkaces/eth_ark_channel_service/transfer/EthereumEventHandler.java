@@ -93,9 +93,15 @@ public class EthereumEventHandler {
             );
             transferEntity.setArkTransactionId(arkTransactionId);
 
-            log.info("Sent {} ARK to address {}. ark transaction id {}, eth transaction id {}", arkSendAmount.toPlainString(), contractEntity.getRecipientArkAddress(), arkTransactionId, ethTransactionId);
+            log.info("Sent {} ARK to address {}. ark transaction id {}, eth transaction id {}",
+                    arkSendAmount.toPlainString(),
+                    contractEntity.getRecipientArkAddress(),
+                    arkTransactionId,
+                    ethTransactionId
+            );
 
             transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+
             transferRepository.save(transferEntity);
 
             log.info("Saved transfer id {} to contract {}.", transferEntity.getId(), contractEntity.getId());
