@@ -36,24 +36,22 @@ public class EthereumEventHandler {
 
     @PostMapping("/ethereumEvents")
     public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEvent event) {
-        // todo: verify event post is signed by listener
+        // TODO: Verify event post is signed by listener.
         String ethTransactionId = event.getTransactionId();
         EthereumTransaction transaction = event.getTransaction();
 
-        log.info("Received Ethereum event: " + ethTransactionId + " -> " + transaction.toString());
-        
+        log.info("Received ethereum event: {} -> {}", ethTransactionId, transaction.toString());
+
         String subscriptionId = event.getSubscriptionId();
         ContractEntity contractEntity = contractRepository.findOneBySubscriptionId(subscriptionId);
         if (contractEntity != null) {
-            // todo: lock contract for update to prevent concurrent processing of a listener transaction.
-            // Listeners send events serially, so that shouldn't be an issue, but we might want to lock
-            // to be safe.
+            // TODO: Lock contract for update to prevent concurrent processing of a listener transaction.
+            // Listeners send events serially, so that shouldn't be an issue, but we might want to lock to be safe.
 
-            log.info("Matched event for contract id " + contractEntity.getId() + " eth transaction id " + ethTransactionId);
-
-            String transferId = identifierGenerator.generate();
+            log.info("Matched event for contract id {}, eth transaction id {}", contractEntity.getId(), ethTransactionId);
 
             TransferEntity transferEntity = new TransferEntity();
+            String transferId = identifierGenerator.generate();
             transferEntity.setId(transferId);
             transferEntity.setCreatedAt(LocalDateTime.now());
             transferEntity.setEthTransactionId(ethTransactionId);
@@ -81,7 +79,8 @@ public class EthereumEventHandler {
             }
             transferEntity.setArkSendAmount(arkSendAmount);
 
-            transferEntity.setStatus(TransferStatus.NEW);
+            transferEntity.setStatus(TransferStatus.NEW.getStatus());
+
             transferRepository.save(transferEntity);
 
             // Send ark transaction
@@ -94,15 +93,14 @@ public class EthereumEventHandler {
             );
             transferEntity.setArkTransactionId(arkTransactionId);
 
-            log.info("Sent " + arkSendAmount + " ark to " + contractEntity.getRecipientArkAddress()
-                + ", ark transaction id " + arkTransactionId + ", eth transaction " + ethTransactionId);
+            log.info("Sent {} ARK to address {}. ark transaction id {}, eth transaction id {}", arkSendAmount.toPlainString(), contractEntity.getRecipientArkAddress(), arkTransactionId, ethTransactionId);
 
-            transferEntity.setStatus(TransferStatus.COMPLETE);
+            transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
             transferRepository.save(transferEntity);
-            
-            log.info("Saved transfer id " + transferEntity.getId() + " to contract " + contractEntity.getId());
+
+            log.info("Saved transfer id {} to contract {}.", transferEntity.getId(), contractEntity.getId());
         }
-        
+
         return ResponseEntity.ok().build();
     }
 }

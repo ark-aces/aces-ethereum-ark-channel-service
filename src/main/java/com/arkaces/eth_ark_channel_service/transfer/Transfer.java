@@ -14,6 +14,6 @@ public class Transfer {
     private String ethFlatFee;
     private String ethPercentFee;
     private String ethTotalFee;
-    private String arkSendAmount;
     private String arkTransactionId;
+    private String arkSendAmount;
 }

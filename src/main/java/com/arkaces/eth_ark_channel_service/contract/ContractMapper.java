@@ -12,16 +12,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ContractMapper {
-    
+
     private final TransferMapper transferMapper;
-    
+
     public Contract<Results> map(ContractEntity contractEntity) {
         Contract<Results> contract = new Contract<>();
         contract.setId(contractEntity.getId());
         contract.setCorrelationId(contractEntity.getCorrelationId());
         contract.setCreatedAt(contractEntity.getCreatedAt().atOffset(ZoneOffset.UTC).toString());
         contract.setStatus(contractEntity.getStatus());
-        
+
         Results results = new Results();
         results.setDepositEthAddress(contractEntity.getDepositEthAddress());
         results.setRecipientArkAddress(contractEntity.getRecipientArkAddress());
@@ -30,9 +30,9 @@ public class ContractMapper {
                 .map(transferMapper::map)
                 .collect(Collectors.toList())
         );
-        
+
         contract.setResults(results);
-        
+
         return contract;
     }
 }

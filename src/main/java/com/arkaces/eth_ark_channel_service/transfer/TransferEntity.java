@@ -36,10 +36,10 @@ public class TransferEntity {
     @Column(precision = 20, scale = 8)
     private BigDecimal ethTotalFee;
 
+    private String arkTransactionId;
+
     @Column(precision = 20, scale = 8)
     private BigDecimal arkSendAmount;
-
-    private String arkTransactionId;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private ContractEntity contractEntity;

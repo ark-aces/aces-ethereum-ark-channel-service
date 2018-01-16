@@ -8,8 +8,10 @@ class EthereumEvent {
 
     private String id;
     private String transactionId;
+
     @JsonProperty("data")
     private EthereumTransaction transaction;
+
     private String subscriptionId;
     private String createdAt;
 }

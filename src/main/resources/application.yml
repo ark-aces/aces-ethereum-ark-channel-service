@@ -33,6 +33,18 @@ serverInfo:
         "transfers": {
           "type": "array",
           "properties": {
+            "id": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "ethTransactionId": {
+              "type": "string"
+            },
             "ethAmount": {
               "type": "string"
             },
@@ -48,13 +60,10 @@ serverInfo:
             "ethTotalFee": {
               "type": "string"
             },
-            "arkSendAmount": {
-              "type": "string"
-            },
             "arkTransactionId": {
               "type": "string"
             },
-            "createdAt": {
+            "arkSendAmount": {
               "type": "string"
             }
           }

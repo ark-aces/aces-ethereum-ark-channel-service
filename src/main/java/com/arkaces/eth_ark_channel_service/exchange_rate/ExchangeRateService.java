@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @Service
-public class ExchangeRateService
-{
+public class ExchangeRateService {
+
     private final RestTemplate restTemplate = new RestTemplateBuilder()
         .rootUri("https://min-api.cryptocompare.com/data/")
         .build();

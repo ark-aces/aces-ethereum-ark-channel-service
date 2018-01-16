@@ -13,11 +13,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EntityScan
 @Configuration
 @EnableScheduling
-@Import({AcesServiceConfig.class, ArkAuthConfig.class})
 @EnableJpaRepositories
-@EntityScan
+@Import({AcesServiceConfig.class, ArkAuthConfig.class})
 public class ApplicationConfig {
 
     @Bean

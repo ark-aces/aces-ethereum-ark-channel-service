@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.arkaces</groupId>
-	<artifactId>eth_ark_channel_service</artifactId>
+	<artifactId>ace_ethereum_ark_channel_service</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>eth_ark_channel_service</name>
+	<name>ace_ethereum_ark_channel_service</name>
 	<description>ACES ETH-ARK Channel Service</description>
 
 	<parent>

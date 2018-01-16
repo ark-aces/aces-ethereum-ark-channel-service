@@ -23,12 +23,12 @@ import java.time.LocalDateTime;
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ContractController {
-    
+
     private final IdentifierGenerator identifierGenerator;
     private final ContractRepository contractRepository;
     private final ContractMapper contractMapper;
     private final AcesListenerApi ethereumListener;
-    
+
     @PostMapping("/contracts")
     public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) {
         ContractEntity contractEntity = new ContractEntity();
@@ -36,14 +36,14 @@ public class ContractController {
         contractEntity.setCreatedAt(LocalDateTime.now());
         contractEntity.setId(identifierGenerator.generate());
         contractEntity.setStatus(ContractStatus.EXECUTED);
-        
+
         // Generate ethereum wallet for deposits
         ECKey key = new ECKey();
         String depositEthAddress = Hex.toHexString(key.getPubKeyHash());
         contractEntity.setDepositEthAddress(depositEthAddress);
-        String depositEthPassphrase = Hex.toHexString(key.getPrivKeyBytes());
-        contractEntity.setDepositEthPassphrase(depositEthPassphrase);
-        
+        String depositEthPrivateKey = Hex.toHexString(key.getPrivKeyBytes());
+        contractEntity.setDepositEthPrivateKey(depositEthPrivateKey);
+
         // Subscribe to ethereum listener on deposit ethereum address
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setCallbackUrl(depositEthAddress);
@@ -61,7 +61,7 @@ public class ContractController {
 
         return contractMapper.map(contractEntity);
     }
-    
+
     @GetMapping("/contracts/{contractId}")
     public Contract<Results> getContract(@PathVariable String contractId) {
         ContractEntity contractEntity = contractRepository.findOneById(contractId);
