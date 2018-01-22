@@ -83,6 +83,8 @@ public class EthereumEventHandler {
 
             transferRepository.save(transferEntity);
 
+            // TODO: Make sure service wallet has enough funds.
+
             // Send ark transaction
             Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
             String arkTransactionId = arkClient.broadcastTransaction(
@@ -91,16 +93,28 @@ public class EthereumEventHandler {
                     null,
                     serviceArkAccountSettings.getPassphrase()
             );
-            transferEntity.setArkTransactionId(arkTransactionId);
 
-            log.info("Sent {} ARK to address {}. ark transaction id {}, eth transaction id {}",
-                    arkSendAmount.toPlainString(),
-                    contractEntity.getRecipientArkAddress(),
-                    arkTransactionId,
-                    ethTransactionId
-            );
+            // Check if ark transaction was successful
+            if (arkTransactionId != null) {
+                transferEntity.setArkTransactionId(arkTransactionId);
 
-            transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+                log.info("Sent {} ARK to {}, ark transaction id {}, eth transaction id {}",
+                        arkSendAmount.toPlainString(),
+                        contractEntity.getRecipientArkAddress(),
+                        arkTransactionId,
+                        ethTransactionId
+                );
+
+                transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+            } else {
+                log.error("Failed to send {} ARK to {}, eth transaction id {}",
+                        arkSendAmount.toPlainString(),
+                        contractEntity.getRecipientArkAddress(),
+                        ethTransactionId
+                );
+
+                transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+            }
 
             transferRepository.save(transferEntity);
 

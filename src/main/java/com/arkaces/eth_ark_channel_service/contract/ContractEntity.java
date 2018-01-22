@@ -24,10 +24,8 @@ public class ContractEntity {
     private LocalDateTime expiresAt;
     private String recipientArkAddress;
     private String depositEthAddress;
+    private String depositEthPassphrase; // TODO: Store password encrypted in db
     private String subscriptionId;
-
-    // todo store password encrypted in db
-    private String depositEthPrivateKey;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "contractEntity")
     private List<TransferEntity> transferEntities = new ArrayList<>();

@@ -73,11 +73,13 @@ serverInfo:
 
 #spring:
 #  datasource:
-#    url: "jdbc:h2:/tmp/eth_ark_channel_service.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
 #    driver-class-name: "org.h2.Driver"
-#  jpa:
+#    url: "jdbc:h2:~/tmp/eth_ark_channel_service.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE"
+#  database:
 #    hibernate:
-#      ddl-auto: "create-drop"
+#      ddl-auto: "validate"
+#  jpa:
+#      database-platform: org.hibernate.dialect.H2Dialect
 
 #spring:
 #  datasource:
@@ -95,7 +97,7 @@ serverInfo:
 arkNetworkConfigPath: "ark_network_config/testnet.yml"
 
 serviceArkAccount:
-  address: AewU1vEmPrtQNjdVo33cX84bfovY3jNAkV
+  address: change-me
   passphrase: change-me
 
 fees:
@@ -108,3 +110,7 @@ server:
 ethereumListener:
   url: https://eth-listener-mainnet.arkaces.com/ # TODO https://github.com/ark-aces/aces-listener-ethereum
   apiKey: change-me
+
+ethEventCallbackUrl: "http://localhost:9190/ethereumEvents"
+
+ethMinConfirmations: 5

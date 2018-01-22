@@ -14,9 +14,9 @@ public class TransferMapper {
         transfer.setCreatedAt(transferEntity.getCreatedAt().atOffset(ZoneOffset.UTC).toString());
         transfer.setEthTransactionId(transferEntity.getEthTransactionId());
         transfer.setEthAmount(transferEntity.getEthAmount().toPlainString());
+        transfer.setEthToArkRate(transferEntity.getEthToArkRate().toPlainString());
         transfer.setEthFlatFee(transferEntity.getEthFlatFee().toPlainString());
         transfer.setEthPercentFee(transferEntity.getEthPercentFee().toPlainString());
-        transfer.setEthToArkRate(transferEntity.getEthToArkRate().toPlainString());
         transfer.setEthTotalFee(transferEntity.getEthTotalFee().toPlainString());
         transfer.setArkTransactionId(transferEntity.getArkTransactionId());
         transfer.setArkSendAmount(transferEntity.getArkSendAmount().toPlainString());

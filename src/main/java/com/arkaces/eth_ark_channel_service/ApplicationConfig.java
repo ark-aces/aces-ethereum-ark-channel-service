@@ -1,10 +1,14 @@
 package com.arkaces.eth_ark_channel_service;
 
-import ark_java_client.*;
+import ark_java_client.ArkClient;
+import ark_java_client.ArkNetwork;
+import ark_java_client.ArkNetworkFactory;
+import ark_java_client.HttpArkClientFactory;
 import com.arkaces.ApiClient;
 import com.arkaces.aces_listener_api.AcesListenerApi;
 import com.arkaces.aces_server.aces_service.config.AcesServiceConfig;
 import com.arkaces.aces_server.ark_auth.ArkAuthConfig;
+import com.arkaces.aces_server.common.api_key_generation.ApiKeyGenerator;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,5 +42,20 @@ public class ApplicationConfig {
             apiClient.setPassword(environment.getProperty("ethereumListener.apikey"));
         }
         return new AcesListenerApi(apiClient);
+    }
+
+    @Bean
+    public String ethEventCallbackUrl(Environment environment) {
+        return environment.getProperty("ethEventCallbackUrl");
+    }
+
+    @Bean
+    public Integer ethMinConfirmations(Environment environment) {
+        return Integer.parseInt(environment.getProperty("ethMinConfirmations"));
+    }
+
+    @Bean
+    public ApiKeyGenerator apiKeyGenerator() {
+        return new ApiKeyGenerator();
     }
 }

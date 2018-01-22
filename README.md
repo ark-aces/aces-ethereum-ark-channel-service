@@ -1,4 +1,4 @@
-# aces-service-ethereum-ark-channel-service
+# aces-ethereum-ark-channel-service
 
 ACES ETH to ARK transfer channel service
 
