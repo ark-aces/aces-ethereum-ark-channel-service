@@ -8,6 +8,7 @@ CREATE TABLE contracts (
   recipient_ark_address VARCHAR(255),
   deposit_eth_address VARCHAR(255),
   deposit_eth_passphrase VARCHAR(255),
+  deposit_eth_private_key VARCHAR(255),
   subscription_id VARCHAR(255)
 );
 

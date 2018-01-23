@@ -9,16 +9,19 @@ import com.arkaces.aces_server.aces_service.error.ServiceErrorCodes;
 import com.arkaces.aces_server.common.api_key_generation.ApiKeyGenerator;
 import com.arkaces.aces_server.common.error.NotFoundException;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
-import io.ark.core.Crypto;
 import io.swagger.client.model.Subscription;
 import io.swagger.client.model.SubscriptionRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bitcoinj.core.ECKey;
+import org.spongycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.web3j.crypto.*;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -36,7 +39,8 @@ public class ContractController {
     private final ApiKeyGenerator apiKeyGenerator;
 
     @PostMapping("/contracts")
-    public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) {
+    public Contract<Results> postContract(@RequestBody CreateContractRequest<Arguments> createContractRequest) throws
+            CipherException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         ContractEntity contractEntity = new ContractEntity();
         contractEntity.setId(identifierGenerator.generate());
         contractEntity.setCorrelationId(createContractRequest.getCorrelationId());
@@ -47,10 +51,17 @@ public class ContractController {
         // Generate ethereum wallet for deposits
         String depositEthPassphrase = apiKeyGenerator.generate();
         contractEntity.setDepositEthPassphrase(depositEthPassphrase);
-        ECKey key = Crypto.getKeys(depositEthPassphrase);
-        String depositEthAddress = Crypto.getAddress(key);
+        ECKeyPair ecKeyPair = Keys.createEcKeyPair();
+        WalletFile walletFile = Wallet.createStandard(depositEthPassphrase, ecKeyPair);
+        String depositEthAddress = "0x" + walletFile.getAddress();
         contractEntity.setDepositEthAddress(depositEthAddress);
-        log.info("Deposit Eth Address: {} --- Deposit Eth Passphrase: {}", depositEthAddress, depositEthPassphrase);
+        String depositEthPrivateKey = Hex.toHexString(ecKeyPair.getPrivateKey().toByteArray());
+        contractEntity.setDepositEthPrivateKey(depositEthPrivateKey);
+        log.info("Deposit Eth Address: \"{}\" --- Deposit Eth Passphrase: \"{}\" --- Deposit Eth Private Key: \"{}\"",
+                depositEthAddress,
+                depositEthPassphrase,
+                depositEthPrivateKey
+        );
 
         // Subscribe to ethereum listener on deposit ethereum address
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
