@@ -2,16 +2,21 @@ package com.arkaces.eth_ark_channel_service.transfer;
 
 import ark_java_client.ArkClient;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
+import com.arkaces.eth_ark_channel_service.Constants;
 import com.arkaces.eth_ark_channel_service.FeeSettings;
 import com.arkaces.eth_ark_channel_service.ServiceArkAccountSettings;
 import com.arkaces.eth_ark_channel_service.ark.ArkSatoshiService;
 import com.arkaces.eth_ark_channel_service.contract.ContractEntity;
 import com.arkaces.eth_ark_channel_service.contract.ContractRepository;
+import com.arkaces.eth_ark_channel_service.ethereum.EthereumWeiService;
 import com.arkaces.eth_ark_channel_service.exchange_rate.ExchangeRateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 @Slf4j
 @RestController
@@ -33,10 +39,10 @@ public class EthereumEventHandler {
     private final ArkSatoshiService arkSatoshiService;
     private final ServiceArkAccountSettings serviceArkAccountSettings;
     private final FeeSettings feeSettings;
+    private final EthereumWeiService ethereumWeiService;
 
     @PostMapping("/ethereumEvents")
     public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEventPayload eventPayload) {
-        // TODO: Verify event post is signed by listener.
         String ethTransactionId = eventPayload.getTransactionId();
         EthereumTransaction transaction = eventPayload.getTransaction();
 
@@ -45,9 +51,6 @@ public class EthereumEventHandler {
         String subscriptionId = eventPayload.getSubscriptionId();
         ContractEntity contractEntity = contractRepository.findOneBySubscriptionId(subscriptionId);
         if (contractEntity != null) {
-            // TODO: Lock contract for update to prevent concurrent processing of a listener transaction.
-            // Listeners send events serially, so that shouldn't be an issue, but we might want to lock to be safe.
-
             log.info("Matched event for contract id {}, eth transaction id {}", contractEntity.getId(), ethTransactionId);
 
             TransferEntity transferEntity = new TransferEntity();
@@ -58,7 +61,7 @@ public class EthereumEventHandler {
             transferEntity.setContractEntity(contractEntity);
 
             // Get ETH amount from transaction
-            BigDecimal ethAmount = new BigDecimal(transaction.getValue());
+            BigDecimal ethAmount = ethereumWeiService.toEther(Long.decode(transaction.getValue()));
             transferEntity.setEthAmount(ethAmount);
 
             BigDecimal ethToArkRate = exchangeRateService.getRate("ETH", "ARK");
@@ -73,9 +76,10 @@ public class EthereumEventHandler {
             transferEntity.setEthTotalFee(ethTotalFeeAmount);
 
             // Calculate send ark amount
-            BigDecimal arkSendAmount = BigDecimal.ZERO;
-            if (ethAmount.compareTo(ethTotalFeeAmount) > 0) {
-                arkSendAmount = ethAmount.multiply(ethToArkRate).setScale(8, RoundingMode.HALF_DOWN);
+            BigDecimal arkSendAmount = ethAmount.multiply(ethToArkRate).setScale(8, RoundingMode.HALF_DOWN)
+                    .subtract(Constants.ARK_TRANSACTION_FEE);
+            if (arkSendAmount.compareTo(Constants.ARK_TRANSACTION_FEE) <= 0) {
+                arkSendAmount = BigDecimal.ZERO;
             }
             transferEntity.setArkSendAmount(arkSendAmount);
 
@@ -83,37 +87,61 @@ public class EthereumEventHandler {
 
             transferRepository.save(transferEntity);
 
-            // TODO: Make sure service wallet has enough funds.
-
-            // Send ark transaction
-            Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
-            String arkTransactionId = arkClient.broadcastTransaction(
-                    contractEntity.getRecipientArkAddress(),
-                    arkSendSatoshis,
-                    null,
-                    serviceArkAccountSettings.getPassphrase()
-            );
-
-            // Check if ark transaction was successful
-            if (arkTransactionId != null) {
-                transferEntity.setArkTransactionId(arkTransactionId);
-
-                log.info("Sent {} ARK to {}, ark transaction id {}, eth transaction id {}",
-                        arkSendAmount.toPlainString(),
-                        contractEntity.getRecipientArkAddress(),
-                        arkTransactionId,
-                        ethTransactionId
+            // Check that service has enough ark to send
+            SimpleRetryPolicy policy = new SimpleRetryPolicy(5, Collections.singletonMap(Exception.class, true));
+            RetryTemplate template = new RetryTemplate();
+            template.setRetryPolicy(policy);
+            BigDecimal serviceAvailableArk;
+            try {
+                serviceAvailableArk = template.execute((RetryCallback<BigDecimal, Exception>) context ->
+                        arkSatoshiService.toArk(Long.parseLong(
+                                arkClient.getBalance(serviceArkAccountSettings.getAddress())
+                                        .getBalance()))
                 );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to parse value", e);
+            }
 
-                transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+            if (arkSendAmount.compareTo(BigDecimal.ZERO) > 0) {
+                if (arkSendAmount.compareTo(serviceAvailableArk) <= 0) {
+                    // Send ark transaction
+                    Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
+                    String arkTransactionId = arkClient.broadcastTransaction(
+                            contractEntity.getRecipientArkAddress(),
+                            arkSendSatoshis,
+                            null,
+                            serviceArkAccountSettings.getPassphrase(),
+                            10
+                    );
+
+                    // Check if ark transaction was successful
+                    if (arkTransactionId != null) {
+                        transferEntity.setArkTransactionId(arkTransactionId);
+
+                        log.info("Sent {} ARK to {}, ark transaction id {}, eth transaction id {}",
+                                arkSendAmount.toPlainString(),
+                                contractEntity.getRecipientArkAddress(),
+                                arkTransactionId,
+                                ethTransactionId
+                        );
+
+                        transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+                    } else {
+                        log.error("Failed to send {} ARK to {}, eth transaction id {}",
+                                arkSendAmount.toPlainString(),
+                                contractEntity.getRecipientArkAddress(),
+                                ethTransactionId
+                        );
+
+                        transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+                    }
+                } else {
+                    log.warn("Failed to send transfer " + transferId + " due to insufficient service ark: available = "
+                            + serviceAvailableArk + ", send amount: " + arkSendAmount);
+                    transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+                }
             } else {
-                log.error("Failed to send {} ARK to {}, eth transaction id {}",
-                        arkSendAmount.toPlainString(),
-                        contractEntity.getRecipientArkAddress(),
-                        ethTransactionId
-                );
-
-                transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+                transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
             }
 
             transferRepository.save(transferEntity);

@@ -10,12 +10,14 @@ import com.arkaces.aces_server.aces_service.config.AcesServiceConfig;
 import com.arkaces.aces_server.ark_auth.ArkAuthConfig;
 import com.arkaces.aces_server.common.api_key_generation.ApiKeyGenerator;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 @EntityScan
 @Configuration
@@ -57,5 +59,10 @@ public class ApplicationConfig {
     @Bean
     public ApiKeyGenerator apiKeyGenerator() {
         return new ApiKeyGenerator();
+    }
+
+    @Bean
+    public RestTemplate ethereumRpcRestTemplate(Environment environment) {
+        return new RestTemplateBuilder().rootUri(environment.getProperty("ethRpcRootUri")).build();
     }
 }
