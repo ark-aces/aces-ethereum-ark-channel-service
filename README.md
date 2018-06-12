@@ -94,7 +94,9 @@ Create a new Service Contract:
 curl -X POST localhost:9190/contracts \
 -H 'Content-type: application/json' \
 -d '{
-  "recipientArkAddress": "ARNJJruY6RcuYCXcwWsu4bx9kyZtntqeAx"
+  "arguments": {
+    "recipientArkAddress": "ARNJJruY6RcuYCXcwWsu4bx9kyZtntqeAx"
+  }
 }' 
 ```
 
