@@ -27,46 +27,72 @@ serverInfo:
       "type": "object",
       "properties": {
         "depositEthAddress": {
-          "type": "string"
+          "type": "string",
+          "title": "Deposit ETH Address",
+          "description": "Send ETH to this address to execute contract."
         },
         "recipientArkAddress": {
-          "type": "string"
+          "type": "string",
+          "title": "Recipient ARK Address",
+          "description": "ARK will arrive at this address on contract execution."
         },
         "transfers": {
           "type": "array",
           "properties": {
             "id": {
-              "type": "string"
+              "type": "string",
+              "title": "Transfer ID",
+              "description": "Identifier for transfer"
             },
             "createdAt": {
-              "type": "string"
+              "type": "string",
+              "title": "Create Date",
+              "description": "The time the contract was created."
             },
             "status": {
-              "type": "string"
+              "type": "string",
+              "title": "Status",
+              "description": "The status of the transfer"
             },
             "ethTransactionId": {
-              "type": "string"
+              "type": "string",
+              "title": "Transaction ID (ETH)",
+              "description": "The transaction ID for the ETH contract fulfillment"
             },
             "ethAmount": {
-              "type": "string"
+              "type": "string",
+              "title": "Transfer Amount (ETH)",
+              "description": "The amount of ETH to transfer"
             },
             "ethToArkRate": {
-              "type": "string"
+              "type": "string",
+              "title": "ARK/ETH Exchange Rate",
+              "description": "Amount of ARK to receive per ETH"
             },
             "ethFlatFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Flat Fee (ETH)",
+              "description": "Fixed fee per execution, charged in ETH"
             },
             "ethPercentFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Percentage Fee (ETH)",
+              "description": "Percentage fee per execution, charged in ETH"
             },
             "ethTotalFee": {
-              "type": "string"
+              "type": "string",
+              "title": "Total Fees (ETH)",
+              "description": "The sum of flat fees and percentage fees, charged in ETH"
             },
             "arkTransactionId": {
-              "type": "string"
+              "type": "string",
+              "title": "Transaction ID (ARK)",
+              "description": "The transaction ID for the ARK contract fulfillment"
             },
             "arkSendAmount": {
-              "type": "string"
+              "type": "string",
+              "title": "Receiving Amount (ARK)",
+              "Description": "Total ARK to be received, net of fees"
             }
           }
         }
