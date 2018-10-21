@@ -2,6 +2,7 @@ package com.arkaces.eth_ark_channel_service.transfer;
 
 import ark_java_client.ArkClient;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
+import com.arkaces.aces_server.aces_service.notification.NotificationService;
 import com.arkaces.eth_ark_channel_service.Constants;
 import com.arkaces.eth_ark_channel_service.FeeSettings;
 import com.arkaces.eth_ark_channel_service.ServiceArkAccountSettings;
@@ -40,6 +41,8 @@ public class EthereumEventHandler {
     private final ServiceArkAccountSettings serviceArkAccountSettings;
     private final FeeSettings feeSettings;
     private final EthereumWeiService ethereumWeiService;
+    private final NotificationService notificationService;
+    private final BigDecimal lowCapacityThreshold;
 
     @PostMapping("/ethereumEvents")
     public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEventPayload eventPayload) {
@@ -103,6 +106,9 @@ public class EthereumEventHandler {
             }
 
             if (arkSendAmount.compareTo(BigDecimal.ZERO) > 0) {
+                if (arkSendAmount.compareTo(lowCapacityThreshold) <= 0) {
+                    notificationService.notifyLowCapacity(serviceAvailableArk, "ARK");
+                }
                 if (arkSendAmount.compareTo(serviceAvailableArk) <= 0) {
                     // Send ark transaction
                     Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
@@ -139,6 +145,13 @@ public class EthereumEventHandler {
                     log.warn("Failed to send transfer " + transferId + " due to insufficient service ark: available = "
                             + serviceAvailableArk + ", send amount: " + arkSendAmount);
                     transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+
+                    notificationService.notifyFailedTransfer(
+                            transferEntity.getContractEntity().getId(),
+                            transferEntity.getId(),
+                            "Failed to send transfer " + transferId + " due to insufficient service ark: available = "
+                                    + serviceAvailableArk + ", send amount: " + arkSendAmount
+                    );
                 }
             } else {
                 transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
@@ -147,6 +160,7 @@ public class EthereumEventHandler {
             transferRepository.save(transferEntity);
 
             log.info("Saved transfer id {} to contract {}.", transferEntity.getId(), contractEntity.getId());
+
         }
 
         return ResponseEntity.ok().build();
