@@ -106,9 +106,6 @@ public class EthereumEventHandler {
             }
 
             if (arkSendAmount.compareTo(BigDecimal.ZERO) > 0) {
-                if (arkSendAmount.compareTo(lowCapacityThreshold) <= 0) {
-                    notificationService.notifyLowCapacity(serviceAvailableArk, "ARK");
-                }
                 if (arkSendAmount.compareTo(serviceAvailableArk) <= 0) {
                     // Send ark transaction
                     Long arkSendSatoshis = arkSatoshiService.toSatoshi(arkSendAmount);
@@ -132,29 +129,45 @@ public class EthereumEventHandler {
                         );
 
                         transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
-                    } else {
-                        log.error("Failed to send {} ARK to {}, eth transaction id {}",
-                                arkSendAmount.toPlainString(),
-                                contractEntity.getRecipientArkAddress(),
-                                ethTransactionId
+
+                        notificationService.notifySuccessfulTransfer(
+                                transferEntity.getContractEntity().getId(),
+                                transferEntity.getId()
                         );
 
+
+                    } else {
+                        String message = ("Failed to send" + arkSendAmount.toPlainString() +
+                        " ARK to " + contractEntity.getRecipientArkAddress()+ ", eth transaction id " + ethTransactionId);
+                        log.error(message);
+
                         transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+
+                        notificationService.notifyFailedTransfer(
+                                transferEntity.getContractEntity().getId(),
+                                transferEntity.getId(),
+                                message
+                        );
+
                     }
                 } else {
-                    log.warn("Failed to send transfer " + transferId + " due to insufficient service ark: available = "
-                            + serviceAvailableArk + ", send amount: " + arkSendAmount);
+                    String message = "Failed to send transfer " + transferId + " due to insufficient service ark: available = "
+                            + serviceAvailableArk + ", send amount: " + arkSendAmount;
+                    log.warn(message);
                     transferEntity.setStatus(TransferStatus.FAILED.getStatus());
 
                     notificationService.notifyFailedTransfer(
                             transferEntity.getContractEntity().getId(),
                             transferEntity.getId(),
-                            "Failed to send transfer " + transferId + " due to insufficient service ark: available = "
-                                    + serviceAvailableArk + ", send amount: " + arkSendAmount
+                            message
                     );
                 }
             } else {
                 transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+                notificationService.notifySuccessfulTransfer(
+                        transferEntity.getContractEntity().getId(),
+                        transferEntity.getId()
+                );
             }
 
             transferRepository.save(transferEntity);
