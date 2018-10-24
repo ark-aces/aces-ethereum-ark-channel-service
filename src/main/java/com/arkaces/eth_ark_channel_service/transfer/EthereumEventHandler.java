@@ -2,6 +2,7 @@ package com.arkaces.eth_ark_channel_service.transfer;
 
 import ark_java_client.ArkClient;
 import com.arkaces.aces_server.common.identifer.IdentifierGenerator;
+import com.arkaces.aces_server.aces_service.notification.NotificationService;
 import com.arkaces.eth_ark_channel_service.Constants;
 import com.arkaces.eth_ark_channel_service.FeeSettings;
 import com.arkaces.eth_ark_channel_service.ServiceArkAccountSettings;
@@ -40,6 +41,8 @@ public class EthereumEventHandler {
     private final ServiceArkAccountSettings serviceArkAccountSettings;
     private final FeeSettings feeSettings;
     private final EthereumWeiService ethereumWeiService;
+    private final NotificationService notificationService;
+    private final BigDecimal lowCapacityThreshold;
 
     @PostMapping("/ethereumEvents")
     public ResponseEntity<Void> handleEthereumEvent(@RequestBody EthereumEventPayload eventPayload) {
@@ -126,27 +129,51 @@ public class EthereumEventHandler {
                         );
 
                         transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
-                    } else {
-                        log.error("Failed to send {} ARK to {}, eth transaction id {}",
-                                arkSendAmount.toPlainString(),
-                                contractEntity.getRecipientArkAddress(),
-                                ethTransactionId
+
+                        notificationService.notifySuccessfulTransfer(
+                                transferEntity.getContractEntity().getId(),
+                                transferEntity.getId()
                         );
 
+
+                    } else {
+                        String message = "Failed to send" + arkSendAmount.toPlainString() +
+                        " ARK to " + contractEntity.getRecipientArkAddress()+ ", eth transaction id " + ethTransactionId;
+                        log.error(message);
+
                         transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+
+                        notificationService.notifyFailedTransfer(
+                                transferEntity.getContractEntity().getId(),
+                                transferEntity.getId(),
+                                message
+                        );
+
                     }
                 } else {
-                    log.warn("Failed to send transfer " + transferId + " due to insufficient service ark: available = "
-                            + serviceAvailableArk + ", send amount: " + arkSendAmount);
+                    String message = "Failed to send transfer " + transferId + " due to insufficient service ark: available = "
+                            + serviceAvailableArk + ", send amount: " + arkSendAmount;
+                    log.warn(message);
                     transferEntity.setStatus(TransferStatus.FAILED.getStatus());
+
+                    notificationService.notifyFailedTransfer(
+                            transferEntity.getContractEntity().getId(),
+                            transferEntity.getId(),
+                            message
+                    );
                 }
             } else {
                 transferEntity.setStatus(TransferStatus.COMPLETE.getStatus());
+                notificationService.notifySuccessfulTransfer(
+                        transferEntity.getContractEntity().getId(),
+                        transferEntity.getId()
+                );
             }
 
             transferRepository.save(transferEntity);
 
             log.info("Saved transfer id {} to contract {}.", transferEntity.getId(), contractEntity.getId());
+
         }
 
         return ResponseEntity.ok().build();
