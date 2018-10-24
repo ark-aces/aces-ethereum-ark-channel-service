@@ -137,8 +137,8 @@ public class EthereumEventHandler {
 
 
                     } else {
-                        String message = ("Failed to send" + arkSendAmount.toPlainString() +
-                        " ARK to " + contractEntity.getRecipientArkAddress()+ ", eth transaction id " + ethTransactionId);
+                        String message = "Failed to send" + arkSendAmount.toPlainString() +
+                        " ARK to " + contractEntity.getRecipientArkAddress()+ ", eth transaction id " + ethTransactionId;
                         log.error(message);
 
                         transferEntity.setStatus(TransferStatus.FAILED.getStatus());
